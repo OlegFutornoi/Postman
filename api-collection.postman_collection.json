@@ -1,0 +1,1665 @@
+{
+  "info": {
+    "name": "API Documentation Collection",
+    "description": "Postman коллекция для тестирования API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://ehznqzaumsnjkrntaiox.supabase.co"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "manager_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "current_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "first_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "menu_item_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Кабинет админа",
+      "item": [
+        {
+          "name": "Аутентификация",
+          "item": [
+            {
+              "name": "Get Auth Token",
+              "request": {
+                "name": "Get Auth Token",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/auth/v1/token?grant_type=password",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apikey",
+                    "value": "YOUR_APIKEY_HERE"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let responseData = pm.response.json();",
+                      "if (responseData.access_token) { pm.collectionVariables.set(\"access_token\", responseData.access_token); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Register User",
+              "request": {
+                "name": "Register User",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/auth/v1/signup",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "apikey",
+                    "value": "YOUR_APIKEY_HERE"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"manager@testmail.com\",\n  \"password\": \"ManagerPass123\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let responseData = pm.response.json();",
+                      "if (responseData.id) { pm.collectionVariables.set(\"manager_id\", responseData.id); }"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Пользователи",
+          "item": [
+            {
+              "name": "Get Users",
+              "request": {
+                "name": "Get Users",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/users",
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ]
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let responseData = pm.response.json();",
+                      "if (responseData.users && responseData.users.length > 0) { pm.collectionVariables.set(\"first_user_id\", responseData.users[0].id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create User",
+              "request": {
+                "name": "Create User",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/users",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"new.user@example.com\",\n  \"password\": \"SecurePass123\",\n  \"name\": \"Новый Пользователь\",\n  \"phone\": \"+380991112233\",\n  \"role\": \"user\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                      "let r = pm.response.json();",
+                      "if (r.user && r.user.id) { pm.collectionVariables.set(\"first_user_id\", r.user.id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update User",
+              "request": {
+                "name": "Update User",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/users/{id}",
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Новое имя\",\n  \"phone\": \"+380987654321\",\n  \"role\": \"admin\",\n  \"status\": \"inactive\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let responseData = pm.response.json();",
+                      "if (responseData.user && responseData.user.id) { pm.collectionVariables.set(\"edited_user_id\", responseData.user.id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete User",
+              "request": {
+                "name": "Delete User",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/users/{id}",
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ]
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Права доступа",
+          "item": [
+            {
+              "name": "Get User Permissions",
+              "request": {
+                "name": "Get User Permissions",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/permissions?user_id={{current_user_id}}",
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ]
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update User Permissions",
+              "request": {
+                "name": "Update User Permissions",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/permissions",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"user_id\": \"{{current_user_id}}\",\n  \"permissions\": [\n    {\n      \"menu_item_id\": 1,\n      \"can_view\": true,\n      \"can_edit\": false\n    },\n    {\n      \"menu_item_id\": 2,\n      \"can_view\": true,\n      \"can_edit\": true\n    }\n  ]\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Кабинет пользователя",
+      "item": [
+        {
+          "name": "Профиль",
+          "item": [
+            {
+              "name": "Get Current User",
+              "request": {
+                "name": "Get Current User",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/auth-me",
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ]
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let responseData = pm.response.json();",
+                      "if (responseData.user && responseData.user.id) { pm.collectionVariables.set(\"current_user_id\", responseData.user.id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Profile",
+              "request": {
+                "name": "Update Profile",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/rest/v1/profiles?id=eq.{{manager_id}}",
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "apikey",
+                    "value": "YOUR_APIKEY_HERE"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Manager Name\",\n  \"phone\": \"+380991112233\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Меню",
+          "item": [
+            {
+              "name": "Get Menu",
+              "request": {
+                "name": "Get Menu",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/menu",
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ]
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let responseData = pm.response.json();",
+                      "if (responseData.menu && responseData.menu.length > 0) { pm.collectionVariables.set(\"menu_item_id\", responseData.menu[0].id); }"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Права доступа",
+          "item": [
+            {
+              "name": "Get User Permissions",
+              "request": {
+                "name": "Get User Permissions",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/permissions?user_id={{current_user_id}}",
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ]
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Магазины",
+          "item": [
+            {
+              "name": "List User Shops",
+              "request": {
+                "name": "List User Shops",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/user-shops-list",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (Array.isArray(r.shops) && r.shops.length > 0) { pm.collectionVariables.set(\"store_id\", r.shops[0].id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create Shop",
+              "request": {
+                "name": "Create Shop",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/create-shop",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_name\": \"Demo Shop\",\n  \"template_id\": null,\n  \"xml_config\": null,\n  \"custom_mapping\": null,\n  \"store_company\": \"Company LLC\",\n  \"store_url\": \"https://demo.shop\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (r.shop && r.shop.id) { pm.collectionVariables.set(\"store_id\", r.shop.id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Shop",
+              "request": {
+                "name": "Update Shop",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/update-shop",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{store_id}}\",\n  \"patch\": {\n    \"store_name\": \"Demo Shop Updated\",\n    \"is_active\": true\n  }\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete Shop",
+              "request": {
+                "name": "Delete Shop",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/delete-shop",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{store_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Store Categories List",
+              "request": {
+                "name": "Store Categories List",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/store-categories-list",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (Array.isArray(r.rows) && r.rows.length > 0) { pm.collectionVariables.set(\"store_category_id\", r.rows[0].id); pm.collectionVariables.set(\"category_id\", r.rows[0].category_id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Ensure Store Category",
+              "request": {
+                "name": "Ensure Store Category",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/ensure-store-category",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"category_id\": 12,\n  \"external_id\": \"cat-12\",\n  \"custom_name\": \"Мужская одежда\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (r.id) { pm.collectionVariables.set(\"store_category_id\", r.id.toString()); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Store Category",
+              "request": {
+                "name": "Update Store Category",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/update-store-category",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{store_category_id}}\",\n  \"custom_name\": \"Новое имя\",\n  \"is_active\": true\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete Store Category With Products",
+              "request": {
+                "name": "Delete Store Category With Products",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/delete-store-category-with-products",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"category_id\": \"{{category_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete Store Categories With Products",
+              "request": {
+                "name": "Delete Store Categories With Products",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/delete-store-categories-with-products",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"category_ids\": [\n    \"{{category_id}}\"\n  ]\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get Store Products Count",
+              "request": {
+                "name": "Get Store Products Count",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/get-store-products-count",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Валюты магазина",
+          "item": [
+            {
+              "name": "Store Currencies List",
+              "request": {
+                "name": "Store Currencies List",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/store-currencies-list",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (Array.isArray(r.rows) && r.rows.length > 0) { pm.collectionVariables.set(\"currency_code\", r.rows[0].code); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Add Store Currency",
+              "request": {
+                "name": "Add Store Currency",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/add-store-currency",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"code\": \"EUR\",\n  \"rate\": 40.5\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Store Currency Rate",
+              "request": {
+                "name": "Update Store Currency Rate",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/update-store-currency-rate",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"code\": \"{{currency_code}}\",\n  \"rate\": 41.2\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Set Base Store Currency",
+              "request": {
+                "name": "Set Base Store Currency",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/set-base-store-currency",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"code\": \"{{currency_code}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete Store Currency",
+              "request": {
+                "name": "Delete Store Currency",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/delete-store-currency",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"code\": \"{{currency_code}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get Available Currencies",
+              "request": {
+                "name": "Get Available Currencies",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/get-available-currencies",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Поставщики",
+          "item": [
+            {
+              "name": "Suppliers List",
+              "request": {
+                "name": "Suppliers List",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/suppliers-list",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (Array.isArray(r.suppliers) && r.suppliers.length > 0) { pm.collectionVariables.set(\"supplier_id\", r.suppliers[0].id.toString()); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Suppliers Limit",
+              "request": {
+                "name": "Suppliers Limit",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/suppliers-limit",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (typeof r.value === 'number') { pm.collectionVariables.set(\"suppliers_limit\", String(r.value)); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create Supplier",
+              "request": {
+                "name": "Create Supplier",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/suppliers-create",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"supplier_name\": \"Supplier Demo\",\n  \"website_url\": \"https://sup.demo\",\n  \"xml_feed_url\": null,\n  \"phone\": \"+3800000000\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (r.supplier && r.supplier.id) { pm.collectionVariables.set(\"supplier_id\", String(r.supplier.id)); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Supplier",
+              "request": {
+                "name": "Update Supplier",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/suppliers-update",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{supplier_id}}\",\n  \"supplier_name\": \"Supplier Demo Updated\",\n  \"xml_feed_url\": null,\n  \"phone\": \"+3800000001\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete Supplier",
+              "request": {
+                "name": "Delete Supplier",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/suppliers-delete",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"{{supplier_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Товары",
+          "item": [
+            {
+              "name": "User Products List",
+              "request": {
+                "name": "User Products List",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/user-products-list",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": null,\n  \"limit\": 20,\n  \"offset\": 0\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (Array.isArray(r.products) && r.products.length > 0) { pm.collectionVariables.set(\"product_id\", r.products[0].id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Product Edit Data",
+              "request": {
+                "name": "Product Edit Data",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/product-edit-data",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"store_id\": \"{{store_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Create Product",
+              "request": {
+                "name": "Create Product",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/create-product",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\",\n  \"external_id\": \"EXT-123\",\n  \"name\": \"Demo Product\",\n  \"price\": 100,\n  \"stock_quantity\": 10,\n  \"available\": true,\n  \"description\": \"Описание товара\",\n  \"images\": [\n    {\n      \"url\": \"https://image\",\n      \"is_main\": true,\n      \"order_index\": 0\n    }\n  ],\n  \"params\": [\n    {\n      \"name\": \"Color\",\n      \"value\": \"Red\",\n      \"order_index\": 0\n    }\n  ]\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (r.product_id) { pm.collectionVariables.set(\"product_id\", r.product_id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Product",
+              "request": {
+                "name": "Update Product",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/update-product",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"price\": 120,\n  \"stock_quantity\": 12,\n  \"description\": \"Обновлённое описание\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Delete Product",
+              "request": {
+                "name": "Delete Product",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/delete-product",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_ids\": [\n    \"{{product_id}}\"\n  ]\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Duplicate Product",
+              "request": {
+                "name": "Duplicate Product",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/duplicate-product",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productId\": \"{{product_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (r.product && r.product.id) { pm.collectionVariables.set(\"product_copy_id\", r.product.id); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Save Store Product Edit",
+              "request": {
+                "name": "Save Store Product Edit",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/save-store-product-edit",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"store_id\": \"{{store_id}}\",\n  \"name\": \"Edited\",\n  \"price\": 95,\n  \"linkPatch\": {\n    \"custom_price\": 95\n  }\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (r.link && typeof r.link.custom_price !== 'undefined') { pm.collectionVariables.set(\"link_custom_price\", String(r.link.custom_price)); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Update Store Product Link",
+              "request": {
+                "name": "Update Store Product Link",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/update-store-product-link",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"store_id\": \"{{store_id}}\",\n  \"patch\": {\n    \"custom_price\": 88,\n    \"custom_available\": true\n  }\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get Store Links For Product",
+              "request": {
+                "name": "Get Store Links For Product",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/get-store-links-for-product",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": \"{{product_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Bulk Add Store Product Links",
+              "request": {
+                "name": "Bulk Add Store Product Links",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/bulk-add-store-product-links",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"links\": [\n    {\n      \"product_id\": \"{{product_id}}\",\n      \"store_id\": \"{{store_id}}\",\n      \"is_active\": true\n    }\n  ]\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (typeof r.inserted === 'number') { pm.collectionVariables.set(\"added_links_count\", String(r.inserted)); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Bulk Remove Store Product Links",
+              "request": {
+                "name": "Bulk Remove Store Product Links",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/bulk-remove-store-product-links",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_ids\": [\n    \"{{product_id}}\"\n  ],\n  \"store_ids\": [\n    \"{{store_id}}\"\n  ]\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (typeof r.deleted === 'number') { pm.collectionVariables.set(\"deleted_links_count\", String(r.deleted)); }"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Store Category Filter Options",
+              "request": {
+                "name": "Store Category Filter Options",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/store-category-filter-options",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"store_id\": \"{{store_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get Product Limit Only",
+              "request": {
+                "name": "Get Product Limit Only",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/get-product-limit-only",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                      "let r = pm.response.json();",
+                      "if (typeof r.value === 'number') { pm.collectionVariables.set(\"product_limit\", String(r.value)); }"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Категории",
+          "item": [
+            {
+              "name": "Supplier Categories List",
+              "request": {
+                "name": "Supplier Categories List",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/categories",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"list\",\n  \"supplier_id\": \"{{supplier_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get Supplier Categories (Full)",
+              "request": {
+                "name": "Get Supplier Categories (Full)",
+                "url": "https://ehznqzaumsnjkrntaiox.supabase.co/functions/v1/categories",
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"get_supplier_categories\",\n  \"supplier_id\": \"{{supplier_id}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
