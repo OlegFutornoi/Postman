@@ -1,5 +1,5 @@
 # Docs: API Documentation page + Postman collection for Admin/User cabinet
-https://shoplinkerxml.lovable.app/docs
+https://marketgrow.lovable.app/docs
 
 ## Overview
 
